@@ -33,19 +33,28 @@ low_ef.fit(durations = low["time"],event_observed = low["DEATH_EVENT"], label="E
 moderate_ef.fit(durations = moderate["time"],event_observed = moderate["DEATH_EVENT"], label="30 < EF <= 45")
 high_ef.fit(durations = high["time"],event_observed = high["DEATH_EVENT"], label="EF > 45")
 
-# export to csv
+# export to excel sheet
+# to run the excel sheet exports, pip install openpyxl before running
 print("Male event table")
-print(kmf_m.event_table)
+kmf_m_df = kmf_m.event_table
+print(kmf_m_df)
+kmf_m_df.to_excel("kmf_male.xlsx")
 print("Female event table")
-print(kmf_f.event_table)
+kmf_f_df = kmf_f.event_table
+print(kmf_f_df)
+kmf_f_df.to_excel("kmf_female.xlsx")
 
 print("Predicting survival probabilities after 10 days\nMale:", kmf_m.predict(10))
 print("Female:", kmf_f.predict(10))
 
-# export to csv
+# export to excel sheet
 print("Complete list of survival possibilities")
-print(kmf_m.survival_function_)
-print(kmf_f.survival_function_)
+kmf_m_survival = kmf_m.survival_function_
+print(kmf_m_survival)
+kmf_m_survival.to_excel("kmf_male_survival.xlsx")
+kmf_f_survival = kmf_f.survival_function_
+print(kmf_f_survival)
+kmf_f_survival.to_excel("kmf_female_survival.xlsx")
 
 kmf_m.plot()
 kmf_f.plot()
