@@ -3,23 +3,67 @@
 import matplotlib.pyplot as plt 
 import pandas as pd
 import numpy as np
+from lifelines import KaplanMeierFitter
+from lifelines import CoxPHFitter
 
 # reading file
 filename = "heart_failure_clinical_records_dataset.csv"
 df = pd.read_csv(filename, sep=',')
 
-# converting features into numpy arrays
-age = df['age'].to_numpy()
-anaemia = df['anaemia'].to_numpy() # boolean (1 = anaemic, 0 = non-anaemic)
-creat_phos = df['creatinine_phosphokinase'].to_numpy()
-diabetes = df['diabetes'].to_numpy() # boolean (1 = diabetic, 0 = non-diabetic)
-eject_fract = df['ejection_fraction'].to_numpy()
-bp = df['high_blood_pressure'].to_numpy() # boolean (1 = high, 0 = low)
-platelets = df['platelets'].to_numpy()
-serum_creat = df['serum_creatinine'].to_numpy()
-serum_sodium = df['serum_sodium'].to_numpy()
-sex = df['sex'].to_numpy() # boolean (1 = male, 0 = female)
-smoking = df['smoking'].to_numpy() # boolean (1 = smoker, 0 = non-smoker)
-time = df['time'].to_numpy() # days
-death = df['DEATH_EVENT'].to_numpy() # boolean (1 = death, 0 = no death)
+# creating KaplanMeierFitter objects for male and female patients
+kmf_m = KaplanMeierFitter()
+kmf_f = KaplanMeierFitter()
 
+# creating KaplanMeierFitter objects for ejection fraction levels
+low_ef = KaplanMeierFitter()
+moderate_ef = KaplanMeierFitter()
+high_ef = KaplanMeierFitter()
+
+male = df.query("sex == 1")
+female = df.query("sex == 0")
+
+low = df.query("ejection_fraction <= 30")
+moderate = df.query("ejection_fraction > 30 & ejection_fraction <= 45")
+high = df.query("ejection_fraction > 45")
+
+kmf_m.fit(durations = male["time"],event_observed = male["DEATH_EVENT"], label="Male")
+kmf_f.fit(durations = female["time"],event_observed = female["DEATH_EVENT"], label="Female")
+
+low_ef.fit(durations = low["time"],event_observed = low["DEATH_EVENT"], label="EF <= 30")
+moderate_ef.fit(durations = moderate["time"],event_observed = moderate["DEATH_EVENT"], label="30 < EF <= 45")
+high_ef.fit(durations = high["time"],event_observed = high["DEATH_EVENT"], label="EF > 45")
+
+# export to csv
+print("Male event table")
+print(kmf_m.event_table)
+print("Female event table")
+print(kmf_f.event_table)
+
+print("Predicting survival probabilities after 10 days\nMale:", kmf_m.predict(10))
+print("Female:", kmf_f.predict(10))
+
+# export to csv
+print("Complete list of survival possibilities")
+print(kmf_m.survival_function_)
+print(kmf_f.survival_function_)
+
+kmf_m.plot()
+kmf_f.plot()
+
+plt.xlabel("Days passed")
+plt.ylabel("Survival")
+plt.title("KMF")
+
+plt.show()
+
+low_ef.plot()
+moderate_ef.plot()
+high_ef.plot()
+
+plt.xlabel("Days passed")
+plt.ylabel("Survival")
+plt.title("Ejection Fraction")
+
+plt.show()
+
+# cox proportional hazard method (cox regression)
