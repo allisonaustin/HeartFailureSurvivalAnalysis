@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt 
 import pandas as pd
 import numpy as np
+# to install, run pip install lifelines
 from lifelines import KaplanMeierFitter
 from lifelines import CoxPHFitter
 
@@ -34,24 +35,24 @@ low_ef.fit(durations = low["time"],event_observed = low["DEATH_EVENT"], label="E
 moderate_ef.fit(durations = moderate["time"],event_observed = moderate["DEATH_EVENT"], label="30 < EF <= 45")
 high_ef.fit(durations = high["time"],event_observed = high["DEATH_EVENT"], label="EF > 45")
 
-# describing table of male vs female events
-print("Male event table")
+# export to excel sheet
+# to run the excel sheet exports, pip install openpyxl before running
 kmf_m_df = kmf_m.event_table
-print(kmf_m_df)
-print("Female event table")
+# deleting existing xlsx file
+kmf_m_df.to_excel("kmf_male.xlsx")
 kmf_f_df = kmf_f.event_table
-print(kmf_f_df)
+kmf_f_df.to_excel("kmf_female.xlsx")
 
 print("Predicting survival probabilities after 250 days\nMale:", kmf_m.predict(250))
 print("Female:", kmf_f.predict(250))
 
-# describing table of survival possibilities
-print("Complete list of survival possibilities")
+# export to excel sheet
 kmf_m_survival = kmf_m.survival_function_
-print(kmf_m_survival)
+kmf_m_survival.to_excel("kmf_male_survival.xlsx")
 kmf_f_survival = kmf_f.survival_function_
-print(kmf_f_survival)
+kmf_f_survival.to_excel("kmf_female_survival.xlsx")
 
+# plotting kaplan meier product estimator over time
 kmf_m.plot()
 kmf_f.plot()
 
@@ -83,6 +84,7 @@ plt.title("Ejection Fraction")
 
 plt.show()
 
-
-
-# cox proportional hazard method (cox regression)
+# cox proportional hazard
+cph = CoxPHFitter()
+cph.fit(df, "time", event_col="DEATH_EVENT")
+cph.print_summary()
