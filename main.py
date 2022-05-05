@@ -10,6 +10,7 @@ from lifelines import CoxPHFitter
 filename = "heart_failure_clinical_records_dataset.csv"
 df = pd.read_csv(filename, sep=',')
 
+
 # creating KaplanMeierFitter objects for male and female patients
 kmf_m = KaplanMeierFitter()
 kmf_f = KaplanMeierFitter()
@@ -44,8 +45,8 @@ kmf_f_df = kmf_f.event_table
 print(kmf_f_df)
 kmf_f_df.to_excel("kmf_female.xlsx")
 
-print("Predicting survival probabilities after 10 days\nMale:", kmf_m.predict(10))
-print("Female:", kmf_f.predict(10))
+print("Predicting survival probabilities after 250 days\nMale:", kmf_m.predict(250))
+print("Female:", kmf_f.predict(250))
 
 # export to excel sheet
 print("Complete list of survival possibilities")
@@ -65,6 +66,14 @@ plt.title("KMF")
 
 plt.show()
 
+
+# predicting EF after 250
+print("Predicting survival probabilities after 250 days\nLow EF:", low_ef.predict(250))
+print("Moderate", moderate_ef.predict(250))
+print("High EF", high_ef.predict(250))
+
+
+
 low_ef.plot()
 moderate_ef.plot()
 high_ef.plot()
@@ -73,6 +82,10 @@ plt.xlabel("Days passed")
 plt.ylabel("Survival")
 plt.title("Ejection Fraction")
 
+
+
 plt.show()
+
+
 
 # cox proportional hazard method (cox regression)
