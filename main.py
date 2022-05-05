@@ -21,6 +21,10 @@ low_ef = KaplanMeierFitter()
 moderate_ef = KaplanMeierFitter()
 high_ef = KaplanMeierFitter()
 
+# creating KaplanMeierFitter objects for low BP and high BP
+kmf_hbp = KaplanMeierFitter()
+kmf_lbp = KaplanMeierFitter()
+
 male = df.query("sex == 1")
 female = df.query("sex == 0")
 
@@ -28,12 +32,18 @@ low = df.query("ejection_fraction <= 30")
 moderate = df.query("ejection_fraction > 30 & ejection_fraction <= 45")
 high = df.query("ejection_fraction > 45")
 
+high_BP = df.query("high_blood_pressure == 1")
+low_BP = df.query("high_blood_pressure == 0")
+
 kmf_m.fit(durations = male["time"],event_observed = male["DEATH_EVENT"], label="Male")
 kmf_f.fit(durations = female["time"],event_observed = female["DEATH_EVENT"], label="Female")
 
 low_ef.fit(durations = low["time"],event_observed = low["DEATH_EVENT"], label="EF <= 30")
 moderate_ef.fit(durations = moderate["time"],event_observed = moderate["DEATH_EVENT"], label="30 < EF <= 45")
 high_ef.fit(durations = high["time"],event_observed = high["DEATH_EVENT"], label="EF > 45")
+
+kmf_hbp.fit(durations=high_BP["time"],event_observed=high_BP["DEATH_EVENT"], label="High Blood Pressure")
+kmf_lbp.fit(durations=low_BP["time"],event_observed=low_BP["DEATH_EVENT"], label="Low Blood Pressure")
 
 # export to excel sheet
 # to run the excel sheet exports, pip install openpyxl before running
@@ -79,6 +89,24 @@ plt.xlabel("Days passed")
 plt.ylabel("Survival")
 plt.ylim((0,1))
 plt.title("Ejection Fraction")
+
+
+
+plt.show()
+
+# predicting BP after 250
+print("Predicting survival probabilities after 250 days\nLow BP:", kmf_lbp.predict(250))
+print("High BP", kmf_hbp.predict(250))
+
+
+
+kmf_lbp.plot()
+kmf_hbp.plot()
+
+plt.xlabel("Days passed")
+plt.ylabel("Survival")
+plt.ylim((0,1))
+plt.title("Blood Pressure")
 
 
 
