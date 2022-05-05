@@ -61,6 +61,7 @@ kmf_f.plot()
 
 plt.xlabel("Days passed")
 plt.ylabel("Survival")
+plt.ylim((0,1))
 plt.title("KMF")
 
 plt.show()
@@ -71,6 +72,7 @@ high_ef.plot()
 
 plt.xlabel("Days passed")
 plt.ylabel("Survival")
+plt.ylim((0,1))
 plt.title("Ejection Fraction")
 
 plt.show()
